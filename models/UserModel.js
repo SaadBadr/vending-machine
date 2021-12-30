@@ -8,19 +8,19 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: [true, "Role is required."],
       enum: ["seller", "buyer"],
-      deposit: {
-        type: Number,
-        validate: [
-          {
-            // Instagram username regex https://regexr.com/3cg7r
-            validator: function (v) {
-              return v >= 0 && v % 5 === 0
-            },
-            message: "Invalid Deposit",
+    },
+    depositedMoney: {
+      type: Number,
+      validate: [
+        {
+          // Instagram username regex https://regexr.com/3cg7r
+          validator: function (v) {
+            return v >= 0 && v % 5 === 0
           },
-        ],
-        default: 0,
-      },
+          message: "Invalid Deposit",
+        },
+      ],
+      default: 0,
     },
     username: {
       type: String,
