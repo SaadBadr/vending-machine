@@ -52,3 +52,46 @@ exports.getProduct = catchAsync(async (req, res, next) => {
     },
   })
 })
+
+exports.validateSeller = catchAsync(async (req, res, next) => {
+  const product = await Product.findById(req.params.id)
+  if (!product) {
+    throw new AppError("No product found with that ID", 404)
+  }
+
+  if (!product.sellerId.equals(req.user._id)) {
+    throw new AppError("You are not the owner of this product", 401)
+  }
+
+  req.product = product
+  next()
+})
+
+exports.updateProduct = catchAsync(async (req, res, next) => {
+  const { cost, amountAvailable, productName } = req.body
+  let product = req.product
+
+  product.cost = cost || product.cost
+  product.amountAvailable = amountAvailable || product.amountAvailable
+  product.productName = productName || product.productName
+
+  product = await product.save()
+
+  res.status(200).json({
+    status: "success",
+    data: {
+      data: product,
+    },
+  })
+})
+
+exports.deleteProduct = catchAsync(async (req, res, next) => {
+  const product = await req.product.remove()
+
+  res.status(204).json({
+    status: "success",
+    data: {
+      data: product,
+    },
+  })
+})
