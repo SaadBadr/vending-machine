@@ -14,7 +14,7 @@ const userSchema = new mongoose.Schema(
           {
             // Instagram username regex https://regexr.com/3cg7r
             validator: function (v) {
-              return v > 0 && v % 5 === 0
+              return v >= 0 && v % 5 === 0
             },
             message: "Invalid Deposit",
           },
