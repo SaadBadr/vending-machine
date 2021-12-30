@@ -39,7 +39,6 @@ module.exports.reset = catchAsync(async (req, res, next) => {
 
 module.exports.buy = catchAsync(async (req, res, next) => {
   const user = req.user
-  const { depositedMoney } = user
   const { productId, amount } = req.body
 
   if (
@@ -59,7 +58,6 @@ module.exports.buy = catchAsync(async (req, res, next) => {
   const promises = []
 
   for (const product of products) {
-    console.log(product)
     const id = product._id.toString()
     if (product.amountAvailable < amount_dict[id])
       throw new AppError(
@@ -84,13 +82,13 @@ module.exports.buy = catchAsync(async (req, res, next) => {
 
   const coins = [100, 50, 20, 10, 5]
   let i = 0
-  while (change_amount && i < coins.length)
+  while (change_amount && i < coins.length) {
     if (change_amount >= coins[i]) {
-      change[coins[i] + "cent"] = Math.floor(change_amount % coins[i])
+      change[coins[i] + "cent"] = Math.floor(change_amount / coins[i])
       change_amount -= change[coins[i] + "cent"] * coins[i]
-      i++
     }
-
+    i++
+  }
   user.depositedMoney = 0
   promises.push(user.save())
 
@@ -101,8 +99,12 @@ module.exports.buy = catchAsync(async (req, res, next) => {
     data: {
       total_cost,
       change,
-      products,
-      amount,
+      cart: products.map((product) => ({
+        id: product._id,
+        productName: product.productName,
+        amount: amount_dict[product._id.toString()],
+        cost_per_item: product.cost,
+      })),
     },
   })
 })
