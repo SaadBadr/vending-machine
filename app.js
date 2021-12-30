@@ -16,6 +16,7 @@ const errorController = require("./controllers/errorController")
 const authenticationRouter = require("./routes/authenticationRoutes")
 const userRouter = require("./routes/userRoutes")
 const productRouter = require("./routes/productRoutes")
+const transactionRouter = require("./routes/transactionRoutes")
 
 // Globals:-
 // -----------------------------------------------------------------
@@ -73,6 +74,7 @@ const apiUrlBase = `${process.env.API_URL_PREFIX}/v${process.env.API_VERSION}`
 app.use(`${apiUrlBase}/auth`, authenticationRouter)
 app.use(`${apiUrlBase}/users`, userRouter)
 app.use(`${apiUrlBase}/products`, productRouter)
+app.use(`${apiUrlBase}/`, transactionRouter)
 
 // Global Error Controller
 app.use(errorController)
