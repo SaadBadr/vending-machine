@@ -14,10 +14,15 @@ module.exports.updateUser = catchAsync(async (req, res, next) => {
       "Please use the apporbiate endpoint to update your password",
       400
     )
-  const user = User.findOneAndUpdate(
+  const user = await User.findOneAndUpdate(
     req.user._id,
     { username: req.body.username },
     { runValidators: true, new: true }
   )
   res.status(200).json({ status: "success", data: { data: user.toPublic() } })
+})
+
+module.exports.deleteUser = catchAsync(async (req, res, next) => {
+  await req.user.remove()
+  res.status(204).json({ status: "success", data: { data: null } })
 })

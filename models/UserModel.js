@@ -1,6 +1,8 @@
 const mongoose = require("mongoose")
 const validator = require("validator")
 const AppError = require("../utils/appError")
+const Product = require("./ProductModel")
+const catchAsync = require("../utils/catchAsync")
 
 const userSchema = new mongoose.Schema(
   {
@@ -85,6 +87,13 @@ userSchema.methods.toPublic = function () {
   })
   return publicUser
 }
+
+// delete all products of a seller in case of delete seller
+userSchema.pre("remove", { document: true }, async function (next) {
+  if (this.role !== "seller") next()
+  await Product.deleteMany({ sellerId: this._id })
+  next()
+})
 
 const User = mongoose.model("User", userSchema)
 module.exports = User
