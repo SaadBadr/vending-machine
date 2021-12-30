@@ -94,7 +94,7 @@ module.exports.protect = () => {
 
 module.exports.restrictTo = (...roles) => {
   return (req, res, next) => {
-    const myRole = req.user.type
+    const myRole = req.user.role
 
     if (!roles.includes(myRole)) {
       return next(
