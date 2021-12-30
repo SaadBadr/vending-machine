@@ -66,7 +66,6 @@ app.use(passport.initialize()) // This line must be put if we are using sessions
 // Compress responses before sending it.
 app.use(compression())
 
-
 // Routes configuration
 const apiUrlBase = `${process.env.API_URL_PREFIX}/v${process.env.API_VERSION}`
 
