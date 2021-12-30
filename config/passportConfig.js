@@ -19,7 +19,11 @@ module.exports = (passport) => {
     new JwtStrategy(options, async function (payload, done) {
       try {
         const user = await User.findOne({ _id: payload.sub })
-        if (user) {
+
+        if (
+          user &&
+          payload.iat >= Math.floor(user.passwordLastChangedAt / 1000)
+        ) {
           return done(null, user)
         } else {
           return done(null, false)
