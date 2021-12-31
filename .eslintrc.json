@@ -6,9 +6,14 @@
         "modules": true
       }
     },
+    "env": {
+      "node": true,
+      "es6": true
+    },  
     "plugins": ["prettier"],
     "extends": ["prettier"],
     "rules": {
+      "no-undef": 1,
       "prettier/prettier": [
         "error",
         {
