@@ -38,7 +38,6 @@
 		"passport-jwt": "^4.0.0",
 		"prettier": "^2.5.1",
 		"prettier-eslint-cli": "^5.0.1",
-		"validator": "^13.7.0",
 		"winston": "^3.3.3",
 		"xss-clean": "^0.1.1"
 	},
