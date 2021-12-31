@@ -17,7 +17,7 @@ module.exports.login = catchAsync(async (req, res, next) => {
   const isValid = await verifyPassword(req.body.password, user.password)
   if (!isValid) {
     // Invalid password
-    throw new AppError("Invalid email or password", 401)
+    throw new AppError("Invalid username or password", 401)
   }
 
   // Valid email & pass
@@ -62,11 +62,17 @@ module.exports.signup = catchAsync(async (req, res, next) => {
 })
 
 module.exports.changePassword = catchAsync(async (req, res, next) => {
-  const { password } = req.body
+  const { currentPassword, newPassword } = req.body
 
-  User.validatePassword(password) // If there is an error it would be caught by catchAsync.
+  const isValid = await verifyPassword(currentPassword, req.user.password)
+  if (!isValid) {
+    // Invalid password
+    throw new AppError("Invalid password", 401)
+  }
 
-  const passwordHash = await generatePasswordHashAndSalt(password)
+  User.validatePassword(newPassword) // If there is an error it would be caught by catchAsync.
+
+  const passwordHash = await generatePasswordHashAndSalt(newPassword)
   req.user.password = passwordHash
 
   const updatedUser = await User.findByIdAndUpdate(
