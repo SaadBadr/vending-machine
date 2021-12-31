@@ -5,10 +5,16 @@ const User = require("../models/UserModel")
 
 module.exports.me = catchAsync(async (req, res, next) => {
   const user = req.user.toJSON()
-  res.status(200).json({ status: "success", data: { user } })
+  // SEND RESPONSE
+  res.status(200).json({
+    status: "success",
+    data: { user },
+  })
 })
 
 module.exports.updateUser = catchAsync(async (req, res, next) => {
+  // only username can be updated
+  // to update password the user should use another endpoint related to auth
   if (req.body.password)
     throw new AppError(
       "Please use the apporbiate endpoint to update your password",
@@ -19,12 +25,21 @@ module.exports.updateUser = catchAsync(async (req, res, next) => {
     { username: req.body.username },
     { runValidators: true, new: true }
   )
-  res
-    .status(200)
-    .json({ status: "success", data: { updatedUser: user.toJSON() } })
+
+  // SEND RESPONSE
+  res.status(200).json({
+    status: "success",
+    data: {
+      updatedUser: user.toJSON(),
+    },
+  })
 })
 
 module.exports.deleteUser = catchAsync(async (req, res, next) => {
   await req.user.remove()
-  res.status(204).json({ status: "success", data: { data: null } })
+  // SEND RESPONSE
+  res.status(204).json({
+    status: "success",
+    data: { data: null },
+  })
 })

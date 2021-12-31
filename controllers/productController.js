@@ -16,6 +16,7 @@ module.exports.createProduct = catchAsync(async (req, res, next) => {
 
   newProduct = await newProduct.save() // If there is an error it would be caught by catchAsync.
 
+  // SEND RESPONSE
   res.status(201).json({
     status: "success",
     data: {
@@ -45,6 +46,7 @@ exports.getProduct = catchAsync(async (req, res, next) => {
     throw new AppError("No product found with that ID", 404)
   }
 
+  // SEND RESPONSE
   res.status(200).json({
     status: "success",
     data: {
@@ -53,6 +55,7 @@ exports.getProduct = catchAsync(async (req, res, next) => {
   })
 })
 
+// this middleware is responsible to validate that the current user is owner of the product
 exports.validateSeller = catchAsync(async (req, res, next) => {
   const product = await Product.findById(req.params.id)
   if (!product) {
@@ -77,6 +80,7 @@ exports.updateProduct = catchAsync(async (req, res, next) => {
 
   product = await product.save()
 
+  // SEND RESPONSE
   res.status(200).json({
     status: "success",
     data: {
@@ -86,8 +90,9 @@ exports.updateProduct = catchAsync(async (req, res, next) => {
 })
 
 exports.deleteProduct = catchAsync(async (req, res, next) => {
-  const product = await req.product.remove()
+  await req.product.remove()
 
+  // SEND RESPONSE
   res.status(204).json({
     status: "success",
     data: {

@@ -23,6 +23,7 @@ module.exports.login = catchAsync(async (req, res, next) => {
   // Valid email & pass
   const tokenObject = signJwt(user._id, user.role)
 
+  // SEND RESPONSE
   res.status(200).json({
     status: "success",
     data: {
@@ -49,6 +50,7 @@ module.exports.signup = catchAsync(async (req, res, next) => {
 
   const tokenObject = signJwt(newUser._id, newUser.role)
 
+  // SEND RESPONSE
   res.status(201).json({
     status: "success",
     data: {
@@ -77,6 +79,7 @@ module.exports.changePassword = catchAsync(async (req, res, next) => {
   )
   const tokenObject = signJwt(updatedUser._id, updatedUser.role)
 
+  // SEND RESPONSE
   res.status(200).json({
     status: "success",
     data: {
