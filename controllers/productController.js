@@ -19,7 +19,7 @@ module.exports.createProduct = catchAsync(async (req, res, next) => {
   res.status(201).json({
     status: "success",
     data: {
-      data: newProduct,
+      product: newProduct.toJSON(),
     },
   })
 })
@@ -30,10 +30,10 @@ exports.getAllProducts = catchAsync(async (req, res, next) => {
   // SEND RESPONSE
   res.status(200).json({
     status: "success",
-    results: products.length,
     data: {
-      data: products,
+      results: products.length,
       total: await Product.count(),
+      products: products.map((product) => product.toJSON()),
     },
   })
 })
@@ -48,7 +48,7 @@ exports.getProduct = catchAsync(async (req, res, next) => {
   res.status(200).json({
     status: "success",
     data: {
-      data: product,
+      product: product.toJSON(),
     },
   })
 })
@@ -80,7 +80,7 @@ exports.updateProduct = catchAsync(async (req, res, next) => {
   res.status(200).json({
     status: "success",
     data: {
-      data: product,
+      updatedProduct: product.toJSON(),
     },
   })
 })
@@ -91,7 +91,7 @@ exports.deleteProduct = catchAsync(async (req, res, next) => {
   res.status(204).json({
     status: "success",
     data: {
-      data: product,
+      product: null,
     },
   })
 })

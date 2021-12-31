@@ -3,22 +3,22 @@ const AppError = require("../utils/appError")
 const Product = require("../models/ProductModel")
 
 module.exports.deposit = catchAsync(async (req, res, next) => {
+  const cent_5 = req.body["5cent"] || 0
   const cent_10 = req.body["10cent"] || 0
   const cent_20 = req.body["20cent"] || 0
   const cent_50 = req.body["50cent"] || 0
   const cent_100 = req.body["100cent"] || 0
 
   const deposit_amount =
-    10 * cent_10 + 20 * cent_20 + 50 * cent_50 + 100 * cent_100
+    5 * cent_5 + 10 * cent_10 + 20 * cent_20 + 50 * cent_50 + 100 * cent_100
 
   req.user.depositedMoney += deposit_amount
-  console.log(req.user.depositedMoney)
-  const updatedUser = await req.user.save() // If there is an error it would be caught by catchAsync.
+  await req.user.save() // If there is an error it would be caught by catchAsync.
 
   res.status(201).json({
     status: "success",
     data: {
-      data: updatedUser.toPublic(),
+      totalDepositedMoney: req.user.depositedMoney,
     },
   })
 })
@@ -32,7 +32,7 @@ module.exports.reset = catchAsync(async (req, res, next) => {
   res.status(201).json({
     status: "success",
     data: {
-      depositedMoney,
+      totalDepositedMoney: depositedMoney,
     },
   })
 })
@@ -54,7 +54,7 @@ module.exports.buy = catchAsync(async (req, res, next) => {
   amount_dict = {}
 
   productId.forEach((key, i) => (amount_dict[key] = amount[i]))
-  total_cost = 0
+  totalCost = 0
   const promises = []
 
   for (const product of products) {
@@ -65,27 +65,27 @@ module.exports.buy = catchAsync(async (req, res, next) => {
         400
       )
     product.amountAvailable -= amount_dict[id]
-    total_cost += amount_dict[id] * product.cost
+    totalCost += amount_dict[id] * product.cost
     promises.push(product.save())
   }
 
-  if (total_cost > user.depositedMoney)
+  if (totalCost > user.depositedMoney)
     throw new AppError(
       `Requested Order exceeds deposit by ${
-        total_cost - user.depositedMoney
+        totalCost - user.depositedMoney
       }cent`,
       400
     )
 
-  change_amount = user.depositedMoney - total_cost
+  changeAmount = user.depositedMoney - totalCost
   const change = {}
 
   const coins = [100, 50, 20, 10, 5]
   let i = 0
-  while (change_amount && i < coins.length) {
-    if (change_amount >= coins[i]) {
-      change[coins[i] + "cent"] = Math.floor(change_amount / coins[i])
-      change_amount -= change[coins[i] + "cent"] * coins[i]
+  while (changeAmount && i < coins.length) {
+    if (changeAmount >= coins[i]) {
+      change[coins[i] + "cent"] = Math.floor(changeAmount / coins[i])
+      changeAmount -= change[coins[i] + "cent"] * coins[i]
     }
     i++
   }
@@ -97,13 +97,13 @@ module.exports.buy = catchAsync(async (req, res, next) => {
   res.status(200).json({
     status: "success",
     data: {
-      total_cost,
+      totalCost,
       change,
       cart: products.map((product) => ({
         id: product._id,
         productName: product.productName,
         amount: amount_dict[product._id.toString()],
-        cost_per_item: product.cost,
+        costPerItem: product.cost,
       })),
     },
   })

@@ -22,13 +22,13 @@ module.exports.login = catchAsync(async (req, res, next) => {
 
   // Valid email & pass
   const tokenObject = signJwt(user._id, user.role)
-  const publicUser = user.toPublic()
+
   res.status(200).json({
     status: "success",
     data: {
       token: tokenObject.token,
       expiresIn: tokenObject.expires,
-      ...publicUser,
+      user: user.toJSON(),
     },
   })
 })
@@ -48,13 +48,13 @@ module.exports.signup = catchAsync(async (req, res, next) => {
   newUser = await newUser.save() // If there is an error it would be caught by catchAsync.
 
   const tokenObject = signJwt(newUser._id, newUser.role)
-  const publicUser = newUser.toPublic()
+
   res.status(201).json({
     status: "success",
     data: {
       token: tokenObject.token,
       expiresIn: tokenObject.expires,
-      ...publicUser,
+      user: newUser.toJSON(),
     },
   })
 })
@@ -76,14 +76,13 @@ module.exports.changePassword = catchAsync(async (req, res, next) => {
     { new: true, runValidators: true }
   )
   const tokenObject = signJwt(updatedUser._id, updatedUser.role)
-  const publicUser = updatedUser.toPublic()
 
   res.status(200).json({
     status: "success",
     data: {
       token: tokenObject.token,
       expiresIn: tokenObject.expires,
-      ...publicUser,
+      user: updatedUser.toJSON(),
     },
   })
 })

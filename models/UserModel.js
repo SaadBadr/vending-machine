@@ -49,8 +49,6 @@ const userSchema = new mongoose.Schema(
     },
   },
   {
-    toJSON: { virtuals: true },
-    toObject: { virtuals: true },
     timestamps: { createdAt: true, updatedAt: false },
   }
 )
@@ -66,27 +64,16 @@ userSchema.statics.validatePassword = (password) => {
   return true
 }
 
-// Returns a select options object for public user
-userSchema.statics.publicUser = () => {
-  return {
-    password: 0,
-    passwordLastChangedAt: 0,
-    __v: 0,
-  }
-}
-
 // Returns an object contains the public user info.
-userSchema.methods.toPublic = function () {
-  const publicUser = this.toJSON()
-  const fieldsToExclude = userSchema.statics.publicUser()
-
-  Object.keys(publicUser).forEach((el) => {
-    if (fieldsToExclude[el] === 0) {
-      delete publicUser[el]
-    }
-  })
-  return publicUser
-}
+userSchema.set("toJSON", {
+  transform: function (doc, ret, options) {
+    ret.id = ret._id
+    delete ret.password
+    delete ret.passwordLastChangedAt
+    delete ret._id
+    delete ret.__v
+  },
+})
 
 // delete all products of a seller in case of delete seller
 userSchema.pre("remove", { document: true }, async function (next) {

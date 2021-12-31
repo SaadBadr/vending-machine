@@ -4,8 +4,8 @@ const DbQueryManager = require("../utils/dbQueryManager")
 const User = require("../models/UserModel")
 
 module.exports.me = catchAsync(async (req, res, next) => {
-  const user = req.user.toPublic()
-  res.status(200).json({ status: "success", data: { data: user } })
+  const user = req.user.toJSON()
+  res.status(200).json({ status: "success", data: { user } })
 })
 
 module.exports.updateUser = catchAsync(async (req, res, next) => {
@@ -19,7 +19,9 @@ module.exports.updateUser = catchAsync(async (req, res, next) => {
     { username: req.body.username },
     { runValidators: true, new: true }
   )
-  res.status(200).json({ status: "success", data: { data: user.toPublic() } })
+  res
+    .status(200)
+    .json({ status: "success", data: { updatedUser: user.toJSON() } })
 })
 
 module.exports.deleteUser = catchAsync(async (req, res, next) => {
