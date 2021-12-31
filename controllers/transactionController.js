@@ -1,18 +1,15 @@
+const Product = require("../models/ProductModel")
 const catchAsync = require("../utils/catchAsync")
 const AppError = require("../utils/appError")
-const Product = require("../models/ProductModel")
+
+const {
+  moneyToDiscreteCoins,
+  discreteCoinsToMoney,
+} = require("../utils/discreteCoins")
 
 module.exports.deposit = catchAsync(async (req, res, next) => {
   // calculating the total deposit amount
-  const cent_5 = req.body["5cent"] || 0
-  const cent_10 = req.body["10cent"] || 0
-  const cent_20 = req.body["20cent"] || 0
-  const cent_50 = req.body["50cent"] || 0
-  const cent_100 = req.body["100cent"] || 0
-
-  const deposit_amount =
-    5 * cent_5 + 10 * cent_10 + 20 * cent_20 + 50 * cent_50 + 100 * cent_100
-
+  const deposit_amount = discreteCoinsToMoney(req.body)
   // adding the new deposit to the user's account
   req.user.depositedMoney += deposit_amount
   await req.user.save() // If there is an error it would be caught by catchAsync.
@@ -60,12 +57,11 @@ module.exports.buy = catchAsync(async (req, res, next) => {
   const products = await Product.find({ _id: { $in: productId } })
 
   // make a dictionary that maps product id to it's required amount
-  amount_dict = {}
-
+  const amount_dict = {}
   productId.forEach((key, i) => (amount_dict[key] = amount[i]))
 
   // totalCost is used to accumulate the cost of all products
-  totalCost = 0
+  let totalCost = 0
   // promises will include all the promises results from updating amountAvailable of each product and depositedMoney of buyer
   const promises = []
 
@@ -92,19 +88,8 @@ module.exports.buy = catchAsync(async (req, res, next) => {
     )
 
   // convert the change into discrete coins format
-  changeAmount = user.depositedMoney - totalCost
-  const change = {}
-
-  const coins = [100, 50, 20, 10, 5]
-  let i = 0
-  while (changeAmount && i < coins.length) {
-    if (changeAmount >= coins[i]) {
-      change[coins[i] + "cent"] = Math.floor(changeAmount / coins[i])
-      changeAmount -= change[coins[i] + "cent"] * coins[i]
-    }
-    i++
-  }
-
+  const changeAmount = user.depositedMoney - totalCost
+  const change = moneyToDiscreteCoins(changeAmount)
   // update user depositedMoney to zero
   user.depositedMoney = 0
   promises.push(user.save())
