@@ -101,10 +101,6 @@ module.exports = (err, req, res, next) => {
     ) {
       error = handleBodyParserError(error)
     }
-    // else if(error.errors)
-    // {
-    //     error.errors.model
-    // }
     sendErrorProd(error, req, res)
   }
 }

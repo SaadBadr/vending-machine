@@ -4,10 +4,8 @@ const generatePasswordHashAndSalt = require("../utils/generatePasswordHashAndSal
 const verifyPassword = require("../utils/verifyPassword")
 const signJwt = require("../utils/signJwt")
 const User = require("../models/UserModel")
-
 const passport = require("passport")
 
-// For all users
 module.exports.login = catchAsync(async (req, res, next) => {
   const user = await User.findOne({ username: req.body.username })
   if (!user) {
