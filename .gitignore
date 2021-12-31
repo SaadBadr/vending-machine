@@ -1,5 +1,13 @@
-# keys
-*.pem
+############### COMMENTED FOR A LEARNING PROJECT ###############
+# # keys
+# *.pem
+# /config/keys
+
+# # dotenv environment variables file
+# *.env
+# .env
+# .config.env
+################################################################
 
 # Logs
 logs
@@ -60,10 +68,6 @@ typings/
 # Yarn Integrity file
 .yarn-integrity
 
-# dotenv environment variables file
-*.env
-.env
-
 # parcel-bundler cache (https://parceljs.org/)
 .cache
 
@@ -85,8 +89,5 @@ typings/
 #DynamoDB Local files 
 .dynamodb/ 
 
-.config.env
-
-/config/keys
 
 /frontend
