@@ -1,8 +1,6 @@
 const mongoose = require("mongoose")
-const validator = require("validator")
 const AppError = require("../utils/appError")
 const Product = require("./ProductModel")
-const catchAsync = require("../utils/catchAsync")
 
 const userSchema = new mongoose.Schema(
   {
@@ -15,14 +13,12 @@ const userSchema = new mongoose.Schema(
       type: Number,
       validate: [
         {
-          // Instagram username regex https://regexr.com/3cg7r
           validator: function (v) {
             return v >= 0 && v % 5 === 0
           },
           message: "Invalid Deposit",
         },
       ],
-      default: 0,
     },
     username: {
       type: String,
@@ -75,7 +71,13 @@ userSchema.set("toJSON", {
   },
 })
 
-// delete all products of a seller in case of delete seller
+// For new users, assign 0 as depositedMoney for buyers and undefined for sellers
+userSchema.pre(/^save/, { document: true }, function (next) {
+  if (this.isNew) this.depositedMoney = this.role === "seller" ? undefined : 0
+  next()
+})
+
+// Delete all products of a seller in case of delete seller
 userSchema.pre("remove", { document: true }, async function (next) {
   if (this.role !== "seller") next()
   await Product.deleteMany({ sellerId: this._id })
